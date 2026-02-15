@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include <windows.h>
 
-int main() {
-	printf("*");
-	
+void goToXY(int x, int y) {
 	HANDLE hCon;
 	hCon = GetStdHandle(STD_OUTPUT_HANDLE);
 	
 	COORD dwPos;
-	dwPos.X = 4;
-	dwPos.Y = 5;
+	dwPos.X = x;
+	dwPos.Y = y;
 	
 	SetConsoleCursorPosition(hCon,dwPos);
+}
+
+int main() {
+	goToXY(15,10);
 	printf("*");
+
 	return 0;
 }
