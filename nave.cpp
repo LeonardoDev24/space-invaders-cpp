@@ -29,54 +29,81 @@ void hideCursor() {
 	SetConsoleCursorInfo(hCon,&cci);
 }
 
+class Nave {
+	int x, y; // Por defecto son privados
+	public:
+		Nave(int _x,int _y); // El constructor se nombra igual que la clase
+		void pintar();
+		void borrar();
+		void mover();
+};
+
+Nave::Nave(int _x, int _y) {
+	x = _x;
+	y = _y;
+}
+// Nave::Nave(int _x,int _y): x(_x),y(_y) {}  -> alternativa
+
+void Nave::pintar() {
+	goToXY(x,y);
+	printf("  %c",30);
+	goToXY(x,y+1);
+	printf(" %c%c%c",40,207,41);
+	goToXY(x,y+2);
+	printf("%c%c %c%c",30,190,190,30);
+}
+
+void Nave::borrar() {
+	for (int i = 0; i < 3; i++) {
+		goToXY(x,y+i);
+		printf("     ");
+	}
+}
+
+void Nave::mover() {
+	if (kbhit()) {
+		char tecla = getch();
+		borrar();
+		switch (tecla)  {
+			case 'a': 
+				x--;
+				break;
+			case 'd': 
+				x++;
+				break;
+			case 'w':
+				y--;
+				break;
+			case 's':
+				y++;
+				break;
+			case UP: 
+				y--;
+				break;
+			case DOWN: 
+				y++;
+				break;
+			case LEFT:
+				x--;
+				break;
+			case RIGHT:
+				x++;
+				break;
+			default:
+				break;
+		}
+		pintar();
+	}
+}
+
 int main() {
 	hideCursor();
-	int x = 10;
-	int y = 8;
-	goToXY(x,y);
-	printf("*");
+	Nave nave(8,8);
+	nave.pintar();
 	
 	bool gameOver = false;
 	while(!gameOver) {
-		if(kbhit()) {
-			char tecla = getch(); // Devuelve la tecla presionada
-			
-			goToXY(x,y);
-			printf(" "); // Borrar asterisco
-			
-			switch (tecla)  {
-				case 'a': 
-					x--;
-					break;
-				case 'd': 
-					x++;
-					break;
-				case 'w':
-					y--;
-					break;
-				case 's':
-					y++;
-					break;
-				case UP: 
-					y--;
-					break;
-				case DOWN: 
-					y++;
-					break;
-				case LEFT:
-					x--;
-					break;
-				case RIGHT:
-					x++;
-					break;
-				default:
-					break;
-			}
-			// Al comparar char con int el compilador hará referencia al código ASCII
-			
-			goToXY(x,y);
-			printf("*"); // Pinta después de presionar la tecla
-		}
+		nave.mover();
 		
 		Sleep(30); // Detiene ejecución del programa por 30 ms
 	}
