@@ -13,7 +13,19 @@ void goToXY(int x, int y) {
 	SetConsoleCursorPosition(hCon,dwPos);
 }
 
+void hideCursor() {
+	HANDLE hCon;
+	hCon = GetStdHandle(STD_OUTPUT_HANDLE);
+	
+	CONSOLE_CURSOR_INFO cci;
+	cci.dwSize = 20;
+	cci.bVisible = false;
+	
+	SetConsoleCursorInfo(hCon,&cci);
+}
+
 int main() {
+	hideCursor();
 	int x = 10;
 	int y = 8;
 	goToXY(x,y);
