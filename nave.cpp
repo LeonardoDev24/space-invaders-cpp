@@ -2,6 +2,11 @@
 #include <windows.h>
 #include <conio.h>
 
+#define UP 72
+#define LEFT 75
+#define RIGHT 77
+#define DOWN 80
+
 void goToXY(int x, int y) {
 	HANDLE hCon;
 	hCon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -52,9 +57,22 @@ int main() {
 				case 's':
 					y++;
 					break;
+				case UP: 
+					y--;
+					break;
+				case DOWN: 
+					y++;
+					break;
+				case LEFT:
+					x--;
+					break;
+				case RIGHT:
+					x++;
+					break;
 				default:
 					break;
 			}
+			// Al comparar char con int el compilador hará referencia al código ASCII
 			
 			goToXY(x,y);
 			printf("*"); // Pinta después de presionar la tecla
