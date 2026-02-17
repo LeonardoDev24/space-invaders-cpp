@@ -46,11 +46,11 @@ Nave::Nave(int _x, int _y) {
 
 void Nave::pintar() {
 	goToXY(x,y);
-	printf("  %c",30);
+	printf("  %c",142);
 	goToXY(x,y+1);
-	printf(" %c%c%c",40,207,41);
+	printf(" %c%c%c",40,35,41);
 	goToXY(x,y+2);
-	printf("%c%c %c%c",30,190,190,30);
+	printf("%c%c %c%c",220,223,223,220);
 }
 
 void Nave::borrar() {
