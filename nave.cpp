@@ -29,18 +29,50 @@ void hideCursor() {
 	SetConsoleCursorInfo(hCon,&cci);
 }
 
+void pintarLimites() {
+	// Pintar líneas horizontales
+	for(int i = 2; i < 78; i++) {
+		goToXY(i,3);
+		printf("%c",205);
+		goToXY(i,28);
+		printf("%c",205);
+	}
+	
+	// Pintar líneas verticales
+	for (int i = 4; i < 28; i++) {
+		goToXY(2,i);
+		printf("%c",186);
+		goToXY(77,i);
+		printf("%c",186);
+	}
+	
+	// Pintar esquinas
+	goToXY(2,3);
+	printf("%c",201);
+	goToXY(2,28);
+	printf("%c",200);
+	goToXY(77,3);
+	printf("%c",187);
+	goToXY(77,28);
+	printf("%c",188);
+}
+
 class Nave {
 	int x, y; // Por defecto son privados
+	int corazones;
 	public:
-		Nave(int _x,int _y); // El constructor se nombra igual que la clase
+		// El constructor se nombra igual que la clase
+		Nave(int _x,int _y, int _corazones);
 		void pintar();
 		void borrar();
 		void mover();
+		void pintarCorazones();
 };
 
-Nave::Nave(int _x, int _y) {
+Nave::Nave(int _x, int _y, int _corazones) {
 	x = _x;
 	y = _y;
+	corazones = _corazones;
 }
 // Nave::Nave(int _x,int _y): x(_x),y(_y) {}  -> alternativa
 
@@ -66,40 +98,57 @@ void Nave::mover() {
 		borrar();
 		switch (tecla)  {
 			case 'a': 
-				x--;
+				x <= 3 ? x : x--;
 				break;
 			case 'd': 
-				x++;
+				x + 5 >= 77 ? x : x++;
 				break;
 			case 'w':
-				y--;
+				y <= 4 ? y : y--;
 				break;
 			case 's':
-				y++;
+				y + 3 >= 28 ? y : y++;
 				break;
 			case UP: 
-				y--;
+				y <= 4 ? y : y--;
 				break;
 			case DOWN: 
-				y++;
+				y + 3 >= 28 ? y : y++;
 				break;
 			case LEFT:
-				x--;
+				x <= 3 ? x : x--;
 				break;
 			case RIGHT:
-				x++;
+				x + 5 >= 77 ? x : x++;
+				break;
+			case 'e':
+				corazones--;
 				break;
 			default:
 				break;
 		}
 		pintar();
+		pintarCorazones();
+	}
+}
+
+void Nave::pintarCorazones() {
+	goToXY(64,2);
+	printf("Vidas");
+	goToXY(70,2);
+	printf("     ");
+	for (int i = 0; i < corazones; i++) {
+		goToXY(70+i,2);
+		printf("O");
 	}
 }
 
 int main() {
 	hideCursor();
-	Nave nave(8,8);
+	pintarLimites();
+	Nave nave(8,8,3);
 	nave.pintar();
+	nave.pintarCorazones();
 	
 	bool gameOver = false;
 	while(!gameOver) {
