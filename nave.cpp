@@ -33,28 +33,28 @@ void pintarLimites() {
 	// Pintar líneas horizontales
 	for(int i = 2; i < 78; i++) {
 		goToXY(i,3);
-		printf("%c",205);
+		printf("\u2550");
 		goToXY(i,28);
-		printf("%c",205);
+		printf("\u2550");
 	}
 	
 	// Pintar líneas verticales
 	for (int i = 4; i < 28; i++) {
 		goToXY(2,i);
-		printf("%c",186);
+		printf("\u2551");
 		goToXY(77,i);
-		printf("%c",186);
+		printf("\u2551");
 	}
 	
 	// Pintar esquinas
 	goToXY(2,3);
-	printf("%c",201);
+	printf("\u2554");
 	goToXY(2,28);
-	printf("%c",200);
+	printf("\u255A");
 	goToXY(77,3);
-	printf("%c",187);
+	printf("\u2557");
 	goToXY(77,28);
-	printf("%c",188);
+	printf("\u255D");
 }
 
 class Nave {
@@ -78,11 +78,11 @@ Nave::Nave(int _x, int _y, int _corazones) {
 
 void Nave::pintar() {
 	goToXY(x,y);
-	printf("  %c",142);
+	printf("  \u25B2");
 	goToXY(x,y+1);
-	printf(" %c%c%c",40,35,41);
+	printf(" (\u266B)");
 	goToXY(x,y+2);
-	printf("%c%c %c%c",220,223,223,220);
+	printf("\u25B2\u00A5 \u00A5\u25B2");
 }
 
 void Nave::borrar() {
@@ -139,11 +139,12 @@ void Nave::pintarCorazones() {
 	printf("     ");
 	for (int i = 0; i < corazones; i++) {
 		goToXY(70+i,2);
-		printf("O");
+		printf("\u2665");
 	}
 }
 
 int main() {
+	SetConsoleOutputCP(CP_UTF8);
 	hideCursor();
 	pintarLimites();
 	Nave nave(8,8,3);
