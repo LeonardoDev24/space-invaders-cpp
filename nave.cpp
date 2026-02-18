@@ -65,6 +65,9 @@ class Nave {
 	public:
 		// El constructor se nombra igual que la clase
 		Nave(int _x,int _y, int _corazones,int _vidas);
+		int getX();
+		int getY();
+		void setCorazones();
 		void pintar();
 		void borrar();
 		void mover();
@@ -79,6 +82,18 @@ Nave::Nave(int _x, int _y, int _corazones, int _vidas) {
 	vidas = _vidas;
 }
 // Nave::Nave(int _x,int _y): x(_x),y(_y) {}  -> alternativa
+
+int Nave::getX() {
+	return x;
+}
+
+int Nave::getY() {
+	return y;
+}
+
+void Nave::setCorazones() {
+	corazones--;
+}
 
 void Nave::pintar() {
 	goToXY(x,y);
@@ -183,6 +198,7 @@ class Asteroide {
 		Asteroide(int _x, int _y);
 		void pintar();
 		void mover();
+		void choque(class Nave &N);
 };
 
 Asteroide::Asteroide(int _x,int _y) {
@@ -206,6 +222,18 @@ void Asteroide::mover() {
 	pintar();
 }
 
+void Asteroide::choque(class Nave &N) {
+	if (x >= N.getX() && x < N.getX() + 6 && y >= N.getY() && y < N.getY() + 2) {
+		N.setCorazones();
+		N.borrar();
+		N.pintar();
+		N.pintarCorazones();
+		
+		x = rand()%71 + 4;
+		y = 4;
+	}
+}
+
 int main() {
 	SetConsoleOutputCP(CP_UTF8);
 	hideCursor();
@@ -215,11 +243,21 @@ int main() {
 	nave.pintar();
 	nave.pintarCorazones();
 	
-	Asteroide ast(10,4);
+	Asteroide ast1(10,4),ast2(4,8),ast3(15,10),ast4(20,6),ast5(40,12);
 	
 	bool gameOver = false;
 	while(!gameOver) {
-		ast.mover();
+		ast1.mover();
+		ast1.choque(nave);
+		ast2.mover();
+		ast2.choque(nave);
+		ast3.mover();
+		ast3.choque(nave);
+		ast4.mover();
+		ast4.choque(nave);
+		ast5.mover();
+		ast5.choque(nave);
+		
 		nave.explosion();
 		nave.mover();
 		
