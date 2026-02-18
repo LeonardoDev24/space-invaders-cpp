@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <conio.h>
+#include <stdlib.h>
 
 #define UP 72
 #define LEFT 75
@@ -60,19 +61,22 @@ void pintarLimites() {
 class Nave {
 	int x, y; // Por defecto son privados
 	int corazones;
+	int vidas;
 	public:
 		// El constructor se nombra igual que la clase
-		Nave(int _x,int _y, int _corazones);
+		Nave(int _x,int _y, int _corazones,int _vidas);
 		void pintar();
 		void borrar();
 		void mover();
 		void pintarCorazones();
+		void explosion();
 };
 
-Nave::Nave(int _x, int _y, int _corazones) {
+Nave::Nave(int _x, int _y, int _corazones, int _vidas) {
 	x = _x;
 	y = _y;
 	corazones = _corazones;
+	vidas = _vidas;
 }
 // Nave::Nave(int _x,int _y): x(_x),y(_y) {}  -> alternativa
 
@@ -88,7 +92,7 @@ void Nave::pintar() {
 void Nave::borrar() {
 	for (int i = 0; i < 3; i++) {
 		goToXY(x,y+i);
-		printf("     ");
+		printf("        ");
 	}
 }
 
@@ -133,8 +137,10 @@ void Nave::mover() {
 }
 
 void Nave::pintarCorazones() {
+	goToXY(50,2);
+	printf("Vidas %d",vidas);
 	goToXY(64,2);
-	printf("Vidas");
+	printf("Salud");
 	goToXY(70,2);
 	printf("     ");
 	for (int i = 0; i < corazones; i++) {
@@ -143,16 +149,78 @@ void Nave::pintarCorazones() {
 	}
 }
 
+void Nave::explosion() {
+	if (corazones == 0) {
+		borrar();
+		goToXY(x,y);
+		printf("   **   ");
+		goToXY(x,y+1);
+		printf("  ****  ");
+		goToXY(x,y+2);
+		printf("   **   ");
+		Sleep(200);
+		
+		borrar();
+		goToXY(x,y);
+		printf(" * ** * ");
+		goToXY(x,y+1);
+		printf("  ****  ");
+		goToXY(x,y+2);
+		printf(" * ** * ");
+		Sleep(200);
+		borrar();
+		
+		vidas--;
+		corazones = 3;
+		pintarCorazones();
+		pintar();
+	}
+}
+
+class Asteroide {
+	int x,y;
+	public:
+		Asteroide(int _x, int _y);
+		void pintar();
+		void mover();
+};
+
+Asteroide::Asteroide(int _x,int _y) {
+	x = _x;
+	y = _y;
+}
+
+void Asteroide::pintar() {
+	goToXY(x,y);
+	printf("\u24B8");
+}
+
+void Asteroide::mover() {
+	goToXY(x,y);
+	printf(" "); // Borrar
+	y++;
+	if (y > 27) {
+		x = rand()%71 + 4;
+		y = 4;
+	}
+	pintar();
+}
+
 int main() {
 	SetConsoleOutputCP(CP_UTF8);
 	hideCursor();
 	pintarLimites();
-	Nave nave(8,8,3);
+	
+	Nave nave(8,8,3,3);
 	nave.pintar();
 	nave.pintarCorazones();
 	
+	Asteroide ast(10,4);
+	
 	bool gameOver = false;
 	while(!gameOver) {
+		ast.mover();
+		nave.explosion();
 		nave.mover();
 		
 		Sleep(30); // Detiene ejecución del programa por 30 ms
