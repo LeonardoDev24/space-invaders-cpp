@@ -2,6 +2,8 @@
 #include <windows.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <list>
+using namespace std;
 
 #define UP 72
 #define LEFT 75
@@ -234,6 +236,26 @@ void Asteroide::choque(class Nave &N) {
 	}
 }
 
+class Bala {
+	int x,y;
+	public:
+		Bala(int _x, int _y);
+		void mover();
+};
+
+Bala::Bala(int _x, int _y) {
+	x = _x;
+	y = _y;
+}
+
+void Bala::mover() {
+	goToXY(x,y);
+	printf(" "); // Borrar
+	if (y > 4) y--;
+	goToXY(x,y);
+	printf("*");
+}
+
 int main() {
 	SetConsoleOutputCP(CP_UTF8);
 	hideCursor();
@@ -245,8 +267,23 @@ int main() {
 	
 	Asteroide ast1(10,4),ast2(4,8),ast3(15,10),ast4(20,6),ast5(40,12);
 	
+	list<Bala*> balas;
+	list<Bala*>::iterator it;
+	
 	bool gameOver = false;
 	while(!gameOver) {
+		if (kbhit()) {
+			char tecla = getch();
+			if (tecla == 'k' || tecla == 'g') {
+				balas.push_back(new Bala(nave.getX()+2,nave.getY()-1));
+			}
+		}
+		
+		for (it = balas.begin(); it != balas.end(); it++) {
+			// it es un puntero, para acceder a sus métodos se hace con el operador flecha
+			(*it)->mover();
+		}
+		
 		ast1.mover();
 		ast1.choque(nave);
 		ast2.mover();
