@@ -69,10 +69,11 @@ class Nave {
 		Nave(int _x,int _y, int _corazones,int _vidas);
 		int getX();
 		int getY();
+		int getVidas();
 		void setCorazones();
 		void pintar();
 		void borrar();
-		void mover();
+		void mover(char tecla);
 		void pintarCorazones();
 		void explosion();
 };
@@ -91,6 +92,10 @@ int Nave::getX() {
 
 int Nave::getY() {
 	return y;
+}
+
+int Nave::getVidas() {
+	return vidas;
 }
 
 void Nave::setCorazones() {
@@ -113,44 +118,41 @@ void Nave::borrar() {
 	}
 }
 
-void Nave::mover() {
-	if (kbhit()) {
-		char tecla = getch();
-		borrar();
-		switch (tecla)  {
-			case 'a': 
-				x <= 3 ? x : x--;
-				break;
-			case 'd': 
-				x + 5 >= 77 ? x : x++;
-				break;
-			case 'w':
-				y <= 4 ? y : y--;
-				break;
-			case 's':
-				y + 3 >= 28 ? y : y++;
-				break;
-			case UP: 
-				y <= 4 ? y : y--;
-				break;
-			case DOWN: 
-				y + 3 >= 28 ? y : y++;
-				break;
-			case LEFT:
-				x <= 3 ? x : x--;
-				break;
-			case RIGHT:
-				x + 5 >= 77 ? x : x++;
-				break;
-			case 'e':
-				corazones--;
-				break;
-			default:
-				break;
-		}
-		pintar();
-		pintarCorazones();
+void Nave::mover(char tecla) {
+	borrar();
+	switch (tecla)  {
+		case 'a': 
+			x <= 3 ? x : x--;
+			break;
+		case 'd': 
+			x + 5 >= 77 ? x : x++;
+			break;
+		case 'w':
+			y <= 4 ? y : y--;
+			break;
+		case 's':
+			y + 3 >= 28 ? y : y++;
+			break;
+		case UP: 
+			y <= 4 ? y : y--;
+			break;
+		case DOWN: 
+			y + 3 >= 28 ? y : y++;
+			break;
+		case LEFT:
+			x <= 3 ? x : x--;
+			break;
+		case RIGHT:
+			x + 5 >= 77 ? x : x++;
+			break;
+		case 'e':
+			corazones--;
+			break;
+		default:
+			break;
 	}
+	pintar();
+	pintarCorazones();
 }
 
 void Nave::pintarCorazones() {
@@ -167,7 +169,7 @@ void Nave::pintarCorazones() {
 }
 
 void Nave::explosion() {
-	if (corazones == 0) {
+	if (corazones <= 0) {
 		borrar();
 		goToXY(x,y);
 		printf("   **   ");
@@ -198,6 +200,8 @@ class Asteroide {
 	int x,y;
 	public:
 		Asteroide(int _x, int _y);
+		int getX();
+		int getY();
 		void pintar();
 		void mover();
 		void choque(class Nave &N);
@@ -206,6 +210,14 @@ class Asteroide {
 Asteroide::Asteroide(int _x,int _y) {
 	x = _x;
 	y = _y;
+}
+
+int Asteroide::getX() {
+	return x;
+}
+
+int Asteroide::getY() {
+	return y;
 }
 
 void Asteroide::pintar() {
@@ -275,28 +287,35 @@ int main() {
 	SetConsoleOutputCP(CP_UTF8);
 	hideCursor();
 	pintarLimites();
+	goToXY(4,29);
+	printf("This game was made with Notepad++ in C++ \u2665");
 	
 	Nave nave(37,22,3,3);
 	nave.pintar();
 	nave.pintarCorazones();
 	
-	// Asteroide ast1(10,4),ast2(4,8),ast3(15,10),ast4(20,6),ast5(40,12);
 	list<Asteroide*> asteroides;
 	list<Asteroide*>::iterator itA;
 	for (int i = 0; i < 5; i++) {
-		asteroides.push_back(new Asteroide(rand()%75+3,rand()%4+4));
+		asteroides.push_back(new Asteroide(rand()%73+3,4));
 	}
 	
 	list<Bala*> balas;
 	list<Bala*>::iterator it;
 	
+	int puntos = 0;
+	
 	bool gameOver = false;
 	while(!gameOver) {
+		goToXY(4,2);
+		printf("Puntos %d",puntos);
+		
 		if (kbhit()) {
 			char tecla = getch();
 			if (tecla == 'k' || tecla == 'g') {
 				balas.push_back(new Bala(nave.getX()+2,nave.getY()-1));
 			}
+			nave.mover(tecla);
 		}
 		
 		for (it = balas.begin(); it != balas.end(); it++) {
@@ -315,11 +334,40 @@ int main() {
 			(*itA)->choque(nave);
 		}
 		
+		for (itA = asteroides.begin(); itA != asteroides.end(); itA++) {
+			for (it = balas.begin(); it != balas.end(); it++) {
+				bool colision = (*itA)->getX() == (*it)->getX() && 
+				((*itA)->getY()+1 == (*it)->getY() || (*itA)->getY() == (*it)->getY());
+				
+				if (colision) {
+					// Borrar balas
+					goToXY((*it)->getX(),(*it)->getY());
+					printf(" ");
+					delete(*it);
+					it = balas.erase(it);
+					
+					// Borrar asteroides
+					asteroides.push_back(new Asteroide(rand()%73+3,4));
+					goToXY((*itA)->getX(),(*itA)->getY());
+					printf(" ");
+					delete(*itA);
+					itA = asteroides.erase(itA);
+					
+					puntos++;
+				}
+			}
+		}
+		if (nave.getVidas() == 0) {
+			gameOver = true;
+		}
 		nave.explosion();
-		nave.mover();
-		
 		Sleep(30); // Detiene ejecución del programa por 30 ms
 	}
+	
+	goToXY(35,14);
+	printf("GAME OVER");
+	goToXY(0,30);
+	system("PAUSE");
 
 	return 0;
 }
