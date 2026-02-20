@@ -240,12 +240,23 @@ class Bala {
 	int x,y;
 	public:
 		Bala(int _x, int _y);
+		int getX();
+		int getY();
 		void mover();
+		bool fuera();
 };
 
 Bala::Bala(int _x, int _y) {
 	x = _x;
 	y = _y;
+}
+
+int Bala::getX() {
+	return x;
+}
+
+int Bala::getY() {
+	return y;
 }
 
 void Bala::mover() {
@@ -256,16 +267,25 @@ void Bala::mover() {
 	printf("*");
 }
 
+bool Bala::fuera() {
+	return y==4;
+}
+
 int main() {
 	SetConsoleOutputCP(CP_UTF8);
 	hideCursor();
 	pintarLimites();
 	
-	Nave nave(8,8,3,3);
+	Nave nave(37,22,3,3);
 	nave.pintar();
 	nave.pintarCorazones();
 	
-	Asteroide ast1(10,4),ast2(4,8),ast3(15,10),ast4(20,6),ast5(40,12);
+	// Asteroide ast1(10,4),ast2(4,8),ast3(15,10),ast4(20,6),ast5(40,12);
+	list<Asteroide*> asteroides;
+	list<Asteroide*>::iterator itA;
+	for (int i = 0; i < 5; i++) {
+		asteroides.push_back(new Asteroide(rand()%75+3,rand()%4+4));
+	}
 	
 	list<Bala*> balas;
 	list<Bala*>::iterator it;
@@ -282,18 +302,18 @@ int main() {
 		for (it = balas.begin(); it != balas.end(); it++) {
 			// it es un puntero, para acceder a sus métodos se hace con el operador flecha
 			(*it)->mover();
+			if ((*it)->fuera()) {
+				goToXY((*it)->getX(),(*it)->getY());
+				printf(" ");
+				delete(*it);
+				it = balas.erase(it);
+			}
 		}
 		
-		ast1.mover();
-		ast1.choque(nave);
-		ast2.mover();
-		ast2.choque(nave);
-		ast3.mover();
-		ast3.choque(nave);
-		ast4.mover();
-		ast4.choque(nave);
-		ast5.mover();
-		ast5.choque(nave);
+		for (itA = asteroides.begin(); itA != asteroides.end(); itA++) {
+			(*itA)->mover();
+			(*itA)->choque(nave);
+		}
 		
 		nave.explosion();
 		nave.mover();
